@@ -19,7 +19,14 @@ pub fn calc(req: &model::MahjongRequest) -> Option<model::MahjongResponse> {
     let mut yaku_v: Vec<(Vec<&'static Yaku>, usize, usize, usize)> = ctx_v
         .into_iter()
         .map(|ctx| (ctx.calc_yaku(&m), ctx.calc_fu()))
-        .map(|((v, a, b), c)| (v, if a == 0 { 0 } else { a + dora_num }, b, c))
+        .map(|((v, a, b), c)| {
+            (
+                v,
+                if b > 0 { 0 } else { a + dora_num },
+                b,
+                if b > 0 { 0 } else { c },
+            )
+        })
         .collect();
     yaku_v.sort_by_key(|(_, fan, yakuman, fu)| get_points(true, *fu, *fan, *yakuman).0);
     yaku_v.reverse();
