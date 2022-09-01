@@ -1,3 +1,4 @@
+use mahjong_score::mahjong::Points;
 use serde::{de, Deserialize, Serialize};
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -26,6 +27,7 @@ pub struct MahjongRequest {
     pub ura_dora: Vec<TileRepresentation>,
     #[serde(rename = "nukiDora")]
     pub nuki_dora: Vec<TileRepresentation>,
+    #[serde(rename = "yakuFlags")]
     pub yaku_flags: YakuFlags,
     #[serde(rename = "disabledYakuId")]
     pub disabled_yaku_id: Vec<usize>,
@@ -52,6 +54,7 @@ pub struct YakuFlags {
     #[serde(deserialize_with = "deserialize_bool")]
     pub riichi: bool,
     #[serde(deserialize_with = "deserialize_bool")]
+    #[serde(rename = "doubleRiichi")]
     pub double_riichi: bool,
     #[serde(deserialize_with = "deserialize_bool")]
     pub ippatsu: bool,
@@ -94,17 +97,17 @@ impl Response {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct MahjongResponse {
-    pub score_result: ScoreResult,
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct ScoreResult {
     pub yaku: Vec<Yaku>,
     #[serde(rename = "doraNum")]
     pub dora_num: usize,
-    pub fu: usize,
-    pub fan: usize,
-    pub score: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fu: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fan: Option<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub yakuman: Option<usize>,
+    pub score_oya: Points,
+    pub score_ko: Points,
     #[serde(rename = "scoreTitle")]
     pub score_title: String,
 }
@@ -122,11 +125,11 @@ where
     let s: &str = de::Deserialize::deserialize(deserializer)?;
 
     match s {
-        "yes" | "Yes" | "YES" => Ok(true),
-        "no" | "No" | "NO" => Ok(false),
+        "yes" | "Yes" | "YES" | "true" => Ok(true),
+        "no" | "No" | "NO" | "false" => Ok(false),
         _ => Err(de::Error::unknown_variant(
             s,
-            &["yes", "Yes", "YES", "no", "No", "NO"],
+            &["yes", "Yes", "YES", "true", "no", "No", "NO", "false"],
         )),
     }
 }

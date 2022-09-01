@@ -1,5 +1,6 @@
 use super::model;
 use mahjong_score::mahjong::{Fuuro, FuuroType, HandContext, Tile, TileWithDora, YakuFlags};
+use std::collections::HashMap;
 
 pub fn fuuro_tf(fuuro: &model::FuuroRepresentaion) -> Fuuro {
     let v: Vec<TileWithDora> = fuuro.tiles.iter().map(|t| tile_with_dora_tf(&t)).collect();
@@ -51,4 +52,12 @@ pub fn request_tf(req: &model::MahjongRequest) -> HandContext {
         hand_tiles, fuuro, agari_tile, req.tsumo, req.bakaze, req.jikaze, dora, ura_dora,
         nuki_dora, yaku_flags,
     )
+}
+
+pub fn yaku_enable_map_tf(req: &model::MahjongRequest) -> HashMap<usize, bool> {
+    let mut m: HashMap<usize, bool> = HashMap::new();
+    for id in &req.disabled_yaku_id {
+        m.insert(*id, false);
+    }
+    m
 }
