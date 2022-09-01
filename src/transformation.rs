@@ -39,14 +39,14 @@ pub fn request_tf(req: &model::MahjongRequest) -> HandContext {
     let yaku_flags: YakuFlags = YakuFlags {
         menzentsumo: req.yaku_flags.menzentsumo,
         riichi: req.yaku_flags.riichi,
-        double_riichi: req.yaku_flags.double_riichi,
+        double_riichi: req.yaku_flags.double_riichi.unwrap_or(false),
         ippatsu: req.yaku_flags.ippatsu,
-        haiteiraoyue: req.yaku_flags.haiteiraoyue,
-        houteiraoyui: req.yaku_flags.houteiraoyui,
-        rinshankaihou: req.yaku_flags.rinshankaihou,
-        chankan: req.yaku_flags.chankan,
-        tenhou: req.yaku_flags.tenhou,
-        tiihou: req.yaku_flags.tiihou,
+        haiteiraoyue: req.yaku_flags.haiteiraoyue.unwrap_or(false),
+        houteiraoyui: req.yaku_flags.houteiraoyui.unwrap_or(false),
+        rinshankaihou: req.yaku_flags.rinshankaihou.unwrap_or(false),
+        chankan: req.yaku_flags.chankan.unwrap_or(false),
+        tenhou: req.yaku_flags.tenhou.unwrap_or(false),
+        tiihou: req.yaku_flags.tiihou.unwrap_or(false),
     };
     HandContext::new(
         hand_tiles, fuuro, agari_tile, req.tsumo, req.bakaze, req.jikaze, dora, ura_dora,

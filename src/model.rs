@@ -16,7 +16,6 @@ pub struct MahjongRequest {
     pub fuuro: Vec<FuuroRepresentaion>,
     #[serde(rename = "agariTile")]
     pub agari_tile: TileRepresentation,
-    #[serde(deserialize_with = "deserialize_bool")]
     pub tsumo: bool,
     #[serde(deserialize_with = "deserialize_kaze")]
     pub bakaze: usize,
@@ -49,27 +48,17 @@ pub struct FuuroRepresentaion {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct YakuFlags {
-    #[serde(deserialize_with = "deserialize_bool")]
     pub menzentsumo: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
     pub riichi: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
     #[serde(rename = "doubleRiichi")]
-    pub double_riichi: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
+    pub double_riichi: Option<bool>,
     pub ippatsu: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub haiteiraoyue: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub houteiraoyui: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub rinshankaihou: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub chankan: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub tenhou: bool,
-    #[serde(deserialize_with = "deserialize_bool")]
-    pub tiihou: bool,
+    pub haiteiraoyue: Option<bool>,
+    pub houteiraoyui: Option<bool>,
+    pub rinshankaihou: Option<bool>,
+    pub chankan: Option<bool>,
+    pub tenhou: Option<bool>,
+    pub tiihou: Option<bool>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -116,22 +105,6 @@ pub struct MahjongResponse {
 pub struct Yaku {
     pub name: String,
     pub fan: usize,
-}
-
-fn deserialize_bool<'de, D>(deserializer: D) -> Result<bool, D::Error>
-where
-    D: de::Deserializer<'de>,
-{
-    let s: &str = de::Deserialize::deserialize(deserializer)?;
-
-    match s {
-        "yes" | "Yes" | "YES" | "true" => Ok(true),
-        "no" | "No" | "NO" | "false" => Ok(false),
-        _ => Err(de::Error::unknown_variant(
-            s,
-            &["yes", "Yes", "YES", "true", "no", "No", "NO", "false"],
-        )),
-    }
 }
 
 fn deserialize_kaze<'de, D>(deserializer: D) -> Result<usize, D::Error>
