@@ -29,7 +29,7 @@ async fn main() -> Result<(), actix_web::Error> {
         .parse()
         .expect("PORT must be a number");
     HttpServer::new(move || App::new().service(api))
-        .bind(("127.0.0.1", port))?
+        .bind(("0.0.0.0", port))?
         .run()
         .await?;
     Ok(())
