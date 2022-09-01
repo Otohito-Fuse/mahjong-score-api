@@ -7,3 +7,6 @@
 
 ## 点数計算
 [mahjong-score](https://github.com/Otohito-Fuse/mahjong-score)
+
+## デプロイ
+Heroku にデプロイするつもりで `Procfile` を置いている
