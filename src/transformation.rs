@@ -1,0 +1,54 @@
+use super::model;
+use mahjong_score::mahjong::{Fuuro, FuuroType, HandContext, Tile, TileWithDora, YakuFlags};
+
+pub fn fuuro_tf(fuuro: &model::FuuroRepresentaion) -> Fuuro {
+    let v: Vec<TileWithDora> = fuuro.tiles.iter().map(|t| tile_with_dora_tf(&t)).collect();
+    match &*fuuro.r#type {
+        "Pon" => Fuuro(FuuroType::Pon, v),
+        "Chi" => Fuuro(FuuroType::Chi, v),
+        "Ankan" => Fuuro(FuuroType::Ankan, v),
+        "Minkan" => Fuuro(FuuroType::Minkan, v),
+        _ => Fuuro(FuuroType::Pon, Vec::new()),
+    }
+}
+
+fn tile_with_dora_tf(tile: &model::TileRepresentation) -> TileWithDora {
+    TileWithDora(Tile(tile.r#type, tile.num), tile.dora.unwrap_or(0))
+}
+
+fn tile_tf(tile: &model::TileRepresentation) -> Tile {
+    Tile(tile.r#type, tile.num)
+}
+
+pub fn request_tf(req: &model::MahjongRequest) -> HandContext {
+    let hand_tiles: Vec<TileWithDora> = req
+        .hand_tiles
+        .iter()
+        .map(|t| tile_with_dora_tf(&t))
+        .collect();
+    let fuuro: Vec<Fuuro> = req.fuuro.iter().map(|f| fuuro_tf(&f)).collect();
+    let agari_tile: TileWithDora = tile_with_dora_tf(&req.agari_tile);
+    let dora: Vec<Tile> = req.dora.iter().map(|t| tile_tf(&t)).collect();
+    let ura_dora: Vec<Tile> = req.ura_dora.iter().map(|t| tile_tf(&t)).collect();
+    let nuki_dora: Vec<TileWithDora> = req
+        .nuki_dora
+        .iter()
+        .map(|t| tile_with_dora_tf(&t))
+        .collect();
+    let yaku_flags: YakuFlags = YakuFlags {
+        menzentsumo: req.yaku_flags.menzentsumo,
+        riichi: req.yaku_flags.riichi,
+        double_riichi: req.yaku_flags.double_riichi,
+        ippatsu: req.yaku_flags.ippatsu,
+        haiteiraoyue: req.yaku_flags.haiteiraoyue,
+        houteiraoyui: req.yaku_flags.houteiraoyui,
+        rinshankaihou: req.yaku_flags.rinshankaihou,
+        chankan: req.yaku_flags.chankan,
+        tenhou: req.yaku_flags.tenhou,
+        tiihou: req.yaku_flags.tiihou,
+    };
+    HandContext::new(
+        hand_tiles, fuuro, agari_tile, req.tsumo, req.bakaze, req.jikaze, dora, ura_dora,
+        nuki_dora, yaku_flags,
+    )
+}
